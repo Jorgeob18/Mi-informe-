@@ -3,13 +3,13 @@
 // COORDENADAS TEMPORALES PARA EL CANVAS
 // Tendrás que ajustar estos valores para que encajen perfectamente en la imagen public/formato_s4s.png
 const COORDINATES = {
-  nombre: { x: 230, y: 65 },
-  mes: { x: 230, y: 105 },
-  participo_si: { x: 700, y: 170 },
-  participo_no: { x: 700, y: 170 }, // Si no participó, no dibujamos X en la casilla, pero lo dejamos apuntando igual
-  cursos: { x: 700, y: 225 },
-  horas: { x: 700, y: 285 },
-  comentarios: { x: 250, y: 360 }
+  nombre: { x: 230, y: 85 },
+  mes: { x: 230, y: 125 },
+  participo_si: { x: 665, y: 225 },
+  participo_no: { x: 665, y: 225 }, // Si no participó, no dibujamos X en la casilla, pero lo dejamos apuntando igual
+  cursos: { x: 665, y: 285 },
+  horas: { x: 665, y: 360 },
+  comentarios: { x: 230, y: 460 }
 };
 
 /**
@@ -58,6 +58,9 @@ const generateCanvasBlob = async (data, profile) => {
       ctx.fillText(profile.nombre_publicador, COORDINATES.nombre.x, COORDINATES.nombre.y);
       ctx.fillText(`${data.mes} ${data.anio}`, COORDINATES.mes.x, COORDINATES.mes.y);
       
+      // Centrar texto para los valores de la columna derecha
+      ctx.textAlign = 'center';
+      
       if (data.participo) {
         ctx.fillText('X', COORDINATES.participo_si.x, COORDINATES.participo_si.y);
       } else {
@@ -70,6 +73,9 @@ const generateCanvasBlob = async (data, profile) => {
       if (data.horas > 0) {
         ctx.fillText(data.horas.toString(), COORDINATES.horas.x, COORDINATES.horas.y);
       }
+      
+      // Restaurar alineación a la izquierda para los comentarios
+      ctx.textAlign = 'left';
       if (data.notas) {
         ctx.font = '18px Arial'; // Letra más pequeña para notas
         ctx.fillText(data.notas, COORDINATES.comentarios.x, COORDINATES.comentarios.y);
