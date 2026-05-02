@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import Profile from './components/Profile';
 import ReportForm from './components/ReportForm';
 import HistoryView from './components/History';
+import About from './components/About';
 import { useProfile } from './hooks/useProfile';
 import { useReports } from './hooks/useReports';
-import { Settings, FileText, History, AlertCircle } from 'lucide-react';
+import { Settings, FileText, History, AlertCircle, Info } from 'lucide-react';
 
 const MESES = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
@@ -98,6 +99,10 @@ function App() {
                 setView('home');
               }} />
             </div>
+          ) : view === 'info' ? (
+            <div className="animate-in fade-in duration-300">
+              <About />
+            </div>
           ) : (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
               {showReminder && (
@@ -124,17 +129,24 @@ function App() {
         <nav className="bg-white border-t border-gray-100 flex justify-around sticky bottom-0 z-10 pb-safe">
           <button 
             onClick={() => setView('home')}
-            className={`flex-1 py-4 flex flex-col items-center ${view === 'home' ? 'text-blue-600' : 'text-gray-400'}`}
+            className={`flex-1 py-4 flex flex-col items-center ${view === 'home' ? 'text-blue-600' : 'text-gray-400 hover:text-blue-400'}`}
           >
             <FileText className="w-6 h-6 mb-1" />
             <span className="text-[10px] font-bold">Informe</span>
           </button>
           <button 
             onClick={() => setView('history')}
-            className={`flex-1 py-4 flex flex-col items-center ${view === 'history' ? 'text-blue-600' : 'text-gray-400'}`}
+            className={`flex-1 py-4 flex flex-col items-center ${view === 'history' ? 'text-blue-600' : 'text-gray-400 hover:text-blue-400'}`}
           >
             <History className="w-6 h-6 mb-1" />
             <span className="text-[10px] font-bold">Historial</span>
+          </button>
+          <button 
+            onClick={() => setView('info')}
+            className={`flex-1 py-4 flex flex-col items-center ${view === 'info' ? 'text-blue-600' : 'text-gray-400 hover:text-blue-400'}`}
+          >
+            <Info className="w-6 h-6 mb-1" />
+            <span className="text-[10px] font-bold">Info</span>
           </button>
         </nav>
       </div>
