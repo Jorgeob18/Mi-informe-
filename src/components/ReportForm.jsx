@@ -11,7 +11,7 @@ const MESES = [
 
 const ReportForm = ({ editingReport, onClearEdit }) => {
   const { profile } = useProfile();
-  const { saveReport, loading: saving } = useReports();
+  const { saveReport, getReportByMonthYear, loading: saving } = useReports();
   
   // Establecer mes anterior por defecto si estamos en los primeros 5 días
   const today = new Date();
@@ -98,8 +98,22 @@ const ReportForm = ({ editingReport, onClearEdit }) => {
       notas: formData.notas.trim()
     };
 
-    if (editingReport && editingReport.id) {
-      cleanData.id = editingReport.id;
+    let targetId = editingReport ? editingReport.id : null;
+
+    // Verificar si ya existe un informe para ese mes y año que no sea el mismo que estamos editando
+    const existing = await getReportByMonthYear(formData.mes, formData.anio.toString());
+    if (existing && existing.id !== targetId) {
+      const confirmReplace = window.confirm(
+        `Ya existe un informe guardado para ${formData.mes} ${formData.anio}.\n\n¿Deseas reemplazarlo con esta nueva información?`
+      );
+      if (!confirmReplace) {
+        return; // Cancelar guardado
+      }
+      targetId = existing.id; // Sobreescribir el existente
+    }
+
+    if (targetId) {
+      cleanData.id = targetId;
     }
 
     // 1. Guardar en la base de datos

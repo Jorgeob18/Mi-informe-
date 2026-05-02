@@ -1,10 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { reportsStore } from '../utils/db';
-import { Calendar, BookOpen, Clock, FileText, Edit2 } from 'lucide-react';
+import { Calendar, BookOpen, Clock, FileText, Edit2, Trash2 } from 'lucide-react';
 
 const History = ({ onEditReport }) => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const handleDelete = async (id) => {
+    if (window.confirm("¿Estás seguro de que deseas eliminar este informe?")) {
+      try {
+        await reportsStore.removeItem(id);
+        setReports(reports.filter(r => r.id !== id));
+      } catch (error) {
+        console.error("Error al eliminar el reporte:", error);
+      }
+    }
+  };
 
   useEffect(() => {
     const loadReports = async () => {
@@ -74,6 +85,13 @@ const History = ({ onEditReport }) => {
                     <Edit2 className="w-4 h-4" />
                   </button>
                 )}
+                <button 
+                  onClick={() => handleDelete(report.id)}
+                  className="p-1.5 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition flex-shrink-0 ml-2"
+                  title="Eliminar informe"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             </div>
             

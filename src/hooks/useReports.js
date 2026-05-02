@@ -41,5 +41,20 @@ export const useReports = () => {
     }
   };
 
-  return { saveReport, checkLastMonthReportExists, loading };
+  const getReportByMonthYear = async (mes, anio) => {
+    try {
+      let found = null;
+      await reportsStore.iterate((value) => {
+        if (value.mes === mes && value.anio === anio) {
+          found = value;
+        }
+      });
+      return found;
+    } catch (error) {
+      console.error("Error al buscar reporte:", error);
+      return null;
+    }
+  };
+
+  return { saveReport, checkLastMonthReportExists, getReportByMonthYear, loading };
 };
