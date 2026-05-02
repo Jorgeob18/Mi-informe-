@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useProfile } from '../hooks/useProfile';
 import { useReports } from '../hooks/useReports';
-import { shareReport } from '../utils/reportGenerator';
-import { Send, CheckCircle, BookOpen, Clock, MessageSquare, Calendar, X } from 'lucide-react';
+import { shareReport, generateCanvasBlob } from '../utils/reportGenerator';
+import { Send, CheckCircle, BookOpen, Clock, MessageSquare, Calendar, X, Eye } from 'lucide-react';
 
 const MESES = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
@@ -33,6 +33,18 @@ const ReportForm = ({ editingReport, onClearEdit }) => {
     notas: ''
   });
 
+  const [previewImage, setPreviewImage] = useState(null);
+  const [generatingPreview, setGeneratingPreview] = useState(false);
+
+  // Limpiar URL object al desmontar o cambiar imagen
+  useEffect(() => {
+    return () => {
+      if (previewImage) {
+        URL.revokeObjectURL(previewImage);
+      }
+    };
+  }, [previewImage]);
+
   useEffect(() => {
     if (editingReport) {
       setFormData({
@@ -53,6 +65,26 @@ const ReportForm = ({ editingReport, onClearEdit }) => {
 
   const handleToggleParticipo = () => {
     setFormData({ ...formData, participo: !formData.participo });
+  };
+
+  const handlePreview = async () => {
+    setGeneratingPreview(true);
+    try {
+      const cleanData = {
+        ...formData,
+        cursos: parseInt(formData.cursos) || 0,
+        horas: parseInt(formData.horas) || 0,
+        notas: formData.notas.trim()
+      };
+      const blob = await generateCanvasBlob(cleanData, profile);
+      const url = URL.createObjectURL(blob);
+      setPreviewImage(url);
+    } catch (error) {
+      console.error("Error al generar vista previa:", error);
+      alert("Hubo un error al generar la vista previa. Intenta de nuevo.");
+    } finally {
+      setGeneratingPreview(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -238,21 +270,66 @@ const ReportForm = ({ editingReport, onClearEdit }) => {
           ></textarea>
         </div>
 
-        {/* Submit */}
-        <button 
-          type="submit"
-          disabled={saving}
-          className="w-full h-14 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-bold text-lg flex items-center justify-center shadow-lg shadow-green-200 transition-all disabled:opacity-70"
-        >
-          {saving ? (
-            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-          ) : (
-            <>
-              <Send className="w-5 h-5 mr-2" />
-              Guardar y Enviar
-            </>
-          )}
-        </button>
+        {/* Botones de Acción */}
+        <div className="space-y-3 pt-4">
+          <button 
+            type="button"
+            onClick={handlePreview}
+            disabled={generatingPreview || saving}
+            className="w-full h-12 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl font-bold flex items-center justify-center transition-all disabled:opacity-70"
+          >
+            {generatingPreview ? (
+              <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            ) : (
+              <>
+                <Eye className="w-5 h-5 mr-2" />
+                Vista Previa
+              </>
+            )}
+          </button>
+
+          <button 
+            type="submit"
+            disabled={saving}
+            className="w-full h-14 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-bold text-lg flex items-center justify-center shadow-lg shadow-green-200 transition-all disabled:opacity-70"
+          >
+            {saving ? (
+              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            ) : (
+              <>
+                <Send className="w-5 h-5 mr-2" />
+                Guardar y Enviar
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Renderizado de la Vista Previa */}
+        {previewImage && (
+          <div className="mt-6 p-4 border-2 border-dashed border-blue-200 rounded-xl bg-blue-50 animate-in fade-in zoom-in duration-300">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="font-bold text-blue-800 flex items-center">
+                <Eye className="w-4 h-4 mr-2" />
+                Vista Previa Generada
+              </h3>
+              <button 
+                type="button"
+                onClick={() => setPreviewImage(null)}
+                className="p-1 text-blue-400 hover:text-blue-600 hover:bg-blue-100 rounded-full transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <img 
+              src={previewImage} 
+              alt="Vista previa del informe" 
+              className="w-full rounded shadow-sm border border-blue-100" 
+            />
+            <p className="text-xs text-blue-600 mt-3 text-center">
+              Así es exactamente como se verá la imagen que se enviará por WhatsApp.
+            </p>
+          </div>
+        )}
       </form>
     </div>
   );

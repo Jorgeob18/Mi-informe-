@@ -34,7 +34,7 @@ const generateTextReport = (data, profile) => {
 /**
  * Intenta dibujar el informe en el Canvas
  */
-const generateCanvasBlob = async (data, profile) => {
+export const generateCanvasBlob = async (data, profile) => {
   return new Promise((resolve, reject) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
