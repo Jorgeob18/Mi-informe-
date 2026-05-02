@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      includeAssets: ['pwa-512x512.png'], // Solo incluimos lo que realmente existe
       manifest: {
         name: 'Mi Informe',
         short_name: 'Mi Informe',
@@ -17,14 +17,15 @@ export default defineConfig({
         display: 'standalone',
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: 'pwa-512x512.png', // Usamos el de 512x512 para ambos por ahora
             sizes: '192x192',
             type: 'image/png'
           },
           {
             src: 'pwa-512x512.png',
             sizes: '512x512',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any maskable'
           }
         ]
       },
