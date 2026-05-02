@@ -1,13 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Profile from './components/Profile';
+import ReportForm from './components/ReportForm';
+import HistoryView from './components/History';
 import { useProfile } from './hooks/useProfile';
-import { Settings, FileText, History } from 'lucide-react';
+import { useReports } from './hooks/useReports';
+import { Settings, FileText, History, AlertCircle } from 'lucide-react';
+
+const MESES = [
+  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
+  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+];
 
 function App() {
-  const { isProfileComplete, loading } = useProfile();
+  const { isProfileComplete, loading: profileLoading } = useProfile();
+  const { checkLastMonthReportExists } = useReports();
   const [view, setView] = useState('home'); // 'home', 'profile', 'history'
+  
+  const [showReminder, setShowReminder] = useState(false);
+  const [reminderMonth, setReminderMonth] = useState('');
 
-  if (loading) {
+  useEffect(() => {
+    const checkReminder = async () => {
+      const today = new Date();
+      if (today.getDate() <= 5) {
+        const lastMonthIndex = today.getMonth() === 0 ? 11 : today.getMonth() - 1;
+        const lastMonthYear = today.getMonth() === 0 ? today.getFullYear() - 1 : today.getFullYear();
+        
+        const lastMonthString = `${MESES[lastMonthIndex]}-${lastMonthYear}`;
+        
+        const exists = await checkLastMonthReportExists(lastMonthString);
+        if (!exists) {
+          setReminderMonth(MESES[lastMonthIndex]);
+          setShowReminder(true);
+        } else {
+          setShowReminder(false);
+        }
+      } else {
+        setShowReminder(false);
+      }
+    };
+    
+    if (isProfileComplete) {
+      checkReminder();
+    }
+  }, [view, isProfileComplete, checkLastMonthReportExists]);
+
+  if (profileLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
@@ -45,7 +83,7 @@ function App() {
         </header>
 
         {/* Content View */}
-        <main className="flex-1 p-4 bg-gray-50">
+        <main className="flex-1 p-4 bg-gray-50 pb-24">
           {view === 'profile' ? (
             <Profile 
               onComplete={() => setView('home')} 
@@ -53,18 +91,24 @@ function App() {
               showCancel={true}
             />
           ) : view === 'history' ? (
-            <div className="text-center py-12">
-              <History className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-              <h2 className="text-xl font-bold text-gray-700">Historial</h2>
-              <p className="text-gray-500 mt-2">Aquí se mostrarán los informes enviados.</p>
+            <div className="animate-in fade-in duration-300">
+              <HistoryView />
             </div>
           ) : (
-            <div className="text-center py-12">
-              <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-                <span className="text-3xl">📝</span>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-800">Enviar Informe</h2>
-              <p className="text-gray-500 mt-2 mb-8">El formulario se construirá en el siguiente paso.</p>
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+              {showReminder && (
+                <div className="mb-6 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4 flex items-start shadow-sm">
+                  <AlertCircle className="w-6 h-6 text-amber-500 mr-3 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="font-bold text-amber-800 text-sm">¡Recordatorio importante!</h3>
+                    <p className="text-xs text-amber-700 mt-1">
+                      No olvides enviar tu informe del mes de <strong>{reminderMonth}</strong>.
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              <ReportForm />
             </div>
           )}
         </main>
@@ -92,3 +136,4 @@ function App() {
 }
 
 export default App;
+
