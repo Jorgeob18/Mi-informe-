@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useProfile } from '../hooks/useProfile';
 import { useReports } from '../hooks/useReports';
 import { shareReport } from '../utils/reportGenerator';
-import { Send, CheckCircle, BookOpen, Clock, MessageSquare, Calendar } from 'lucide-react';
+import { Send, CheckCircle, BookOpen, Clock, MessageSquare, Calendar, X } from 'lucide-react';
 
 const MESES = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ];
 
-const ReportForm = () => {
+const ReportForm = ({ editingReport, onClearEdit }) => {
   const { profile } = useProfile();
   const { saveReport, loading: saving } = useReports();
   
@@ -33,6 +33,19 @@ const ReportForm = () => {
     notas: ''
   });
 
+  useEffect(() => {
+    if (editingReport) {
+      setFormData({
+        mes: editingReport.mes,
+        anio: editingReport.anio.toString(),
+        participo: editingReport.participo,
+        cursos: editingReport.cursos || '',
+        horas: editingReport.horas || '',
+        notas: editingReport.notas || ''
+      });
+    }
+  }, [editingReport]);
+
   const handleChange = (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     setFormData({ ...formData, [e.target.name]: value });
@@ -53,12 +66,30 @@ const ReportForm = () => {
       notas: formData.notas.trim()
     };
 
+    if (editingReport && editingReport.id) {
+      cleanData.id = editingReport.id;
+    }
+
     // 1. Guardar en la base de datos
     const savedRecord = await saveReport(cleanData);
     
     if (savedRecord) {
       // 2. Generar canvas y compartir
       await shareReport(cleanData, profile);
+      
+      // Limpiar modo edición si aplica
+      if (onClearEdit) {
+        onClearEdit();
+        // Reset form
+        setFormData({
+          mes: MESES[defaultMonthIndex],
+          anio: defaultYear.toString(),
+          participo: true,
+          cursos: '',
+          horas: '',
+          notas: ''
+        });
+      }
     }
   };
 
@@ -66,11 +97,34 @@ const ReportForm = () => {
     <div className="w-full max-w-md bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
       <div className="bg-blue-50 p-4 border-b border-blue-100 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-blue-900">Tu Informe</h2>
+          <h2 className="text-lg font-bold text-blue-900">
+            {editingReport ? 'Editando Informe' : 'Tu Informe'}
+          </h2>
           <p className="text-sm text-blue-600 font-medium">{profile?.nombre_publicador}</p>
         </div>
-        <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white">
-          <Calendar className="w-5 h-5" />
+        <div className="flex space-x-2">
+          {editingReport && (
+            <button 
+              onClick={() => {
+                onClearEdit();
+                setFormData({
+                  mes: MESES[defaultMonthIndex],
+                  anio: defaultYear.toString(),
+                  participo: true,
+                  cursos: '',
+                  horas: '',
+                  notas: ''
+                });
+              }}
+              className="w-10 h-10 bg-red-100 hover:bg-red-200 rounded-full flex items-center justify-center text-red-600 transition"
+              title="Cancelar edición"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
+          <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white">
+            <Calendar className="w-5 h-5" />
+          </div>
         </div>
       </div>
 

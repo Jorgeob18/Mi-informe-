@@ -7,12 +7,12 @@ export const useReports = () => {
   const saveReport = async (reportData) => {
     setLoading(true);
     try {
-      const id = crypto.randomUUID();
+      const id = reportData.id || crypto.randomUUID();
       const timestamp = new Date().getTime();
       
       const record = {
-        id,
         ...reportData,
+        id,
         fecha_envio: timestamp
       };
       

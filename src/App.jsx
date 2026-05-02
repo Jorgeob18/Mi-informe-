@@ -16,6 +16,7 @@ function App() {
   const { checkLastMonthReportExists } = useReports();
   const [view, setView] = useState('home'); // 'home', 'profile', 'history'
   
+  const [editingReport, setEditingReport] = useState(null);
   const [showReminder, setShowReminder] = useState(false);
   const [reminderMonth, setReminderMonth] = useState('');
 
@@ -92,7 +93,10 @@ function App() {
             />
           ) : view === 'history' ? (
             <div className="animate-in fade-in duration-300">
-              <HistoryView />
+              <HistoryView onEditReport={(report) => {
+                setEditingReport(report);
+                setView('home');
+              }} />
             </div>
           ) : (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -108,7 +112,10 @@ function App() {
                 </div>
               )}
               
-              <ReportForm />
+              <ReportForm 
+                editingReport={editingReport} 
+                onClearEdit={() => setEditingReport(null)} 
+              />
             </div>
           )}
         </main>

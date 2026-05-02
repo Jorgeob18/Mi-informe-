@@ -3,13 +3,13 @@
 // COORDENADAS TEMPORALES PARA EL CANVAS
 // Tendrás que ajustar estos valores para que encajen perfectamente en la imagen public/formato_s4s.png
 const COORDINATES = {
-  nombre: { x: 150, y: 120 },
-  mes: { x: 150, y: 160 },
-  participo_si: { x: 200, y: 220 },
-  participo_no: { x: 250, y: 220 },
-  cursos: { x: 150, y: 280 },
-  horas: { x: 150, y: 340 },
-  comentarios: { x: 80, y: 420 }
+  nombre: { x: 230, y: 65 },
+  mes: { x: 230, y: 105 },
+  participo_si: { x: 700, y: 170 },
+  participo_no: { x: 700, y: 170 }, // Si no participó, no dibujamos X en la casilla, pero lo dejamos apuntando igual
+  cursos: { x: 700, y: 225 },
+  horas: { x: 700, y: 285 },
+  comentarios: { x: 250, y: 360 }
 };
 
 /**

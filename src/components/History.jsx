@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { reportsStore } from '../utils/db';
-import { Calendar, BookOpen, Clock, FileText } from 'lucide-react';
+import { Calendar, BookOpen, Clock, FileText, Edit2 } from 'lucide-react';
 
-const History = () => {
+const History = ({ onEditReport }) => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -61,9 +61,20 @@ const History = () => {
                 <Calendar className="w-5 h-5 text-blue-500 mr-2" />
                 <h3 className="font-bold text-gray-800">{report.mes} {report.anio}</h3>
               </div>
-              <span className="text-[10px] text-gray-400 font-medium bg-gray-50 px-2 py-1 rounded-md">
-                {new Date(report.fecha_envio).toLocaleDateString()}
-              </span>
+              <div className="flex items-center">
+                <span className="text-[10px] text-gray-400 font-medium bg-gray-50 px-2 py-1 rounded-md mr-2">
+                  {new Date(report.fecha_envio).toLocaleDateString()}
+                </span>
+                {onEditReport && (
+                  <button 
+                    onClick={() => onEditReport(report)}
+                    className="p-1.5 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition flex-shrink-0"
+                    title="Editar informe"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
             </div>
             
             {report.participo ? (
