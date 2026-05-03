@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Iconos PWA</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; text-align: center; background: #f0f4f8; }
+    .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto; }
+    .canvas-container { border: 1px dashed #ccc; margin: 1rem auto; border-radius: 8px; padding: 10px; background: #fafafa; display: inline-block;}
+    .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 1rem; }
+    a.btn { display: inline-block; padding: 10px 20px; background: #2563eb; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; }
+    a.btn:hover { background: #1d4ed8; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Generador de Iconos PWA</h2>
+    <p>Este script toma tu imagen original de 512x512 y genera automáticamente todos los tamaños necesarios para iOS, Android y Navegadores.</p>
+    
+    <!-- Imagen fuente oculta -->
+    <img id="sourceImage" src="/pwa-512x512.png" style="display:none;" crossorigin="anonymous">
+    
+    <div id="canvases"></div>
+    
+    <div class="btn-group" id="buttons"></div>
+    
+    <p style="font-size: 13px; color: #666; margin-top: 2rem;">
+      <strong>Instrucciones:</strong> Dale clic a todos los botones para descargar los archivos y guárdalos en tu carpeta <code>public/</code>.
+    </p>
+  </div>
+
+  <script>
+    const sizes = [
+      { size: 512, name: 'pwa-512x512.png' },
+      { size: 192, name: 'pwa-192x192.png' },
+      { size: 180, name: 'apple-touch-icon.png' },
+      { size: 64, name: 'favicon.ico' } // Lo guardamos como .ico aunque sea un PNG interno, la mayoria de los navegadores lo aceptan sin problema.
+    ];
+
+    window.onload = function() {
+      const img = document.getElementById('sourceImage');
+      const canvasesContainer = document.getElementById('canvases');
+      const buttonsContainer = document.getElementById('buttons');
+
+      const processImages = () => {
+        sizes.forEach(item => {
+          // Crear canvas
+          const canvas = document.createElement('canvas');
+          canvas.width = item.size;
+          canvas.height = item.size;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, item.size, item.size);
+
+          // Contenedor visual
+          const container = document.createElement('div');
+          container.className = 'canvas-container';
+          const label = document.createElement('div');
+          label.style.fontSize = '12px';
+          label.style.marginBottom = '5px';
+          label.innerText = item.name + ' (' + item.size + 'x' + item.size + ')';
+          container.appendChild(label);
+          container.appendChild(canvas);
+          canvasesContainer.appendChild(container);
+
+          // Crear boton
+          const btn = document.createElement('a');
+          btn.className = 'btn';
+          btn.download = item.name;
+          btn.href = canvas.toDataURL('image/png');
+          btn.innerText = 'Descargar ' + item.name;
+          buttonsContainer.appendChild(btn);
+        });
+      };
+
+      img.onload = processImages;
+
+      // Si la imagen ya estaba en cache
+      if (img.complete) {
+        img.onload();
+      }
+    };
+  </script>
+</body>
+</html>

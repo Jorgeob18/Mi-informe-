@@ -13,7 +13,7 @@ const MESES = [
 ];
 
 function App() {
-  const { isProfileComplete, loading: profileLoading } = useProfile();
+  const { isProfileComplete, loading: profileLoading, reloadProfile } = useProfile();
   const { checkLastMonthReportExists } = useReports();
   const [view, setView] = useState('home'); // 'home', 'profile', 'history'
   
@@ -60,7 +60,7 @@ function App() {
     return (
       <div className="min-h-screen bg-gray-50 p-4 sm:p-6 flex items-center justify-center">
         <div className="w-full max-w-md">
-          <Profile onComplete={() => setView('home')} showCancel={false} />
+          <Profile onComplete={() => { reloadProfile(); setView('home'); }} showCancel={false} />
         </div>
       </div>
     );
@@ -88,7 +88,7 @@ function App() {
         <main className="flex-1 p-4 bg-gray-50 pb-24">
           {view === 'profile' ? (
             <Profile 
-              onComplete={() => setView('home')} 
+              onComplete={() => { reloadProfile(); setView('home'); }} 
               onCancel={() => setView('home')}
               showCancel={true}
             />
