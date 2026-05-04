@@ -30,7 +30,8 @@ const ReportForm = ({ editingReport, onClearEdit }) => {
     participo: true,
     cursos: '',
     horas: '',
-    notas: ''
+    notas: '',
+    precursor: 'ninguno'
   });
 
   const [previewImage, setPreviewImage] = useState(null);
@@ -53,7 +54,8 @@ const ReportForm = ({ editingReport, onClearEdit }) => {
         participo: editingReport.participo,
         cursos: editingReport.cursos || '',
         horas: editingReport.horas || '',
-        notas: editingReport.notas || ''
+        notas: editingReport.notas || '',
+        precursor: editingReport.precursor || 'ninguno'
       });
     }
   }, [editingReport]);
@@ -133,7 +135,8 @@ const ReportForm = ({ editingReport, onClearEdit }) => {
           participo: true,
           cursos: '',
           horas: '',
-          notas: ''
+          notas: '',
+          precursor: 'ninguno'
         });
       }
     }
@@ -159,7 +162,8 @@ const ReportForm = ({ editingReport, onClearEdit }) => {
                   participo: true,
                   cursos: '',
                   horas: '',
-                  notas: ''
+                  notas: '',
+                  precursor: 'ninguno'
                 });
               }}
               className="w-10 h-10 bg-red-100 hover:bg-red-200 rounded-full flex items-center justify-center text-red-600 transition"
@@ -198,6 +202,34 @@ const ReportForm = ({ editingReport, onClearEdit }) => {
               onChange={handleChange}
               className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-gray-800 font-medium"
             />
+          </div>
+        </div>
+
+        {/* Precursor */}
+        <div>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">Privilegio de Servicio</label>
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={() => setFormData({...formData, precursor: 'ninguno'})}
+              className={`py-2 px-3 rounded-lg text-xs font-bold transition-all border ${formData.precursor === 'ninguno' ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-sm' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
+            >
+              Publicador
+            </button>
+            <button
+              type="button"
+              onClick={() => setFormData({...formData, precursor: 'auxiliar'})}
+              className={`py-2 px-3 rounded-lg text-xs font-bold transition-all border ${formData.precursor === 'auxiliar' ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-sm' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
+            >
+              Auxiliar
+            </button>
+            <button
+              type="button"
+              onClick={() => setFormData({...formData, precursor: 'regular'})}
+              className={`py-2 px-3 rounded-lg text-xs font-bold transition-all border ${formData.precursor === 'regular' ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-sm' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
+            >
+              Regular
+            </button>
           </div>
         </div>
 
