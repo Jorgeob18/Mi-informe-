@@ -5,8 +5,6 @@
 const COORDINATES = {
   nombre: { x: 200, y: 95 },
   mes: { x: 180, y: 137 },
-  precursor_regular: { x: 500, y: 95 },  // <-- AJUSTAR COORDENADAS PARA LA CASILLA REGULAR
-  precursor_auxiliar: { x: 500, y: 115 }, // <-- AJUSTAR COORDENADAS PARA LA CASILLA AUXILIAR
   participo_si: { x: 677, y: 235 },
   participo_no: { x: 670, y: 220 }, // Si no participó, no dibujamos X en la casilla, pero lo dejamos apuntando igual
   cursos: { x: 675, y: 295 },
@@ -61,12 +59,6 @@ export const generateCanvasBlob = async (data, profile) => {
       // Escribir datos
       ctx.fillText(profile.nombre_publicador, COORDINATES.nombre.x, COORDINATES.nombre.y);
       ctx.fillText(`${data.mes} ${data.anio}`, COORDINATES.mes.x, COORDINATES.mes.y);
-
-      if (data.precursor === 'regular') {
-        ctx.fillText('X', COORDINATES.precursor_regular.x, COORDINATES.precursor_regular.y);
-      } else if (data.precursor === 'auxiliar') {
-        ctx.fillText('X', COORDINATES.precursor_auxiliar.x, COORDINATES.precursor_auxiliar.y);
-      }
 
       // Centrar texto para los valores de la columna derecha
       ctx.textAlign = 'center';
