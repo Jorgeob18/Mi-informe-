@@ -6,7 +6,7 @@ const COORDINATES = {
   nombre: { x: 200, y: 95 },
   mes: { x: 180, y: 137 },
   participo_si: { x: 677, y: 235 },
-  participo_no: { x: 670, y: 220 }, // Si no participó, no dibujamos X en la casilla, pero lo dejamos apuntando igual
+  participo_no: { x: 677, y: 235 }, // Si no participó, no dibujamos X en la casilla, pero lo dejamos apuntando igual
   cursos: { x: 675, y: 295 },
   horas: { x: 675, y: 355 },
   comentarios: { x: 220, y: 440 }
